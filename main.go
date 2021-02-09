@@ -7,7 +7,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/isindir/sops-secrets-operator/internal"
 	"os"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
@@ -119,7 +118,7 @@ func main() {
 	if len(vaultRole) > 0 && len(vaultServer) > 0 && len(vaultTokenPath) > 0 && len(vaultAuth) > 0 {
 		setupLog.Info("starting vault authenticator")
 
-		vault, err := internal.CreateVaultAuth(vaultServer, vaultAuth, vaultRole, vaultTokenPath)
+		vault, err := controllers.CreateVaultAuth(vaultServer, vaultAuth, vaultRole, vaultTokenPath)
 		if err != nil {
 			setupLog.Error(err, "unable to start vault authenticator")
 			os.Exit(1)
