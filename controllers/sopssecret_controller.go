@@ -182,8 +182,7 @@ func (r *SopsSecretReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		origSecret := foundSecret
 		foundSecret = foundSecret.DeepCopy()
 
-		foundSecret.StringData = newSecret.StringData
-		foundSecret.Data = map[string][]byte{}
+		foundSecret.Data = newSecret.Data
 		foundSecret.Type = newSecret.Type
 		foundSecret.ObjectMeta.Annotations = newSecret.ObjectMeta.Annotations
 		foundSecret.ObjectMeta.Labels = newSecret.ObjectMeta.Labels
@@ -265,9 +264,12 @@ func newSecretForCR(
 	}
 
 	// Construct Data for the secret
-	data := make(map[string]string)
-	for key, value := range secretTpl.Data {
+	data := make(map[string][]byte)
+	for key, value := range secretTpl.BinaryData {
 		data[key] = value
+	}
+	for key, value := range secretTpl.Data {
+		data[key] = []byte(value)
 	}
 
 	if secretTpl.Name == "" {
@@ -298,8 +300,8 @@ func newSecretForCR(
 			Labels:      labels,
 			Annotations: annotations,
 		},
-		Type:       kubeSecretType,
-		StringData: data,
+		Type: kubeSecretType,
+		Data: data,
 	}
 	return secret, nil
 }

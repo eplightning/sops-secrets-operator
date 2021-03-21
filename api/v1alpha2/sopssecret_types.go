@@ -31,9 +31,13 @@ type SopsSecretTemplate struct {
 	// +optional
 	Type string `json:"type,omitempty"`
 
-	// Data map to use in Kubernetes secret (equivalent to Kubernetes Secret object stringData, please see for more
-	// information: https://kubernetes.io/docs/concepts/configuration/secret/#overview-of-secrets)
-	Data map[string]string `json:"data"`
+	// Data is data map to use in Kubernetes secret
+	// +optional
+	Data map[string]string `json:"data,omitempty"`
+
+	// BinaryData is base64 data map to use in Kubernetes secret
+	// +optional
+	BinaryData map[string][]byte `json:"binaryData,omitempty"`
 }
 
 // SopsSecretSpec defines the desired state of SopsSecret
