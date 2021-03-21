@@ -39,6 +39,7 @@ func init() {
 }
 
 func main() {
+	var devMode bool
 	var metricsAddr string
 	var enableLeaderElection bool
 	var probeAddr string
@@ -52,6 +53,7 @@ func main() {
 	var vaultServer string
 	var vaultTokenPath string
 
+	flag.BoolVar(&devMode, "dev", false, "Enable development mode, makes logs human readable")
 	flag.StringVar(&metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")
 	flag.BoolVar(&enableLeaderElection, "enable-leader-election", false,
 		"Enable leader election for controller manager. "+
@@ -69,6 +71,7 @@ func main() {
 	flag.Parse()
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
+	ctrl.SetLogger(zap.New(zap.UseDevMode(devMode)))
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
