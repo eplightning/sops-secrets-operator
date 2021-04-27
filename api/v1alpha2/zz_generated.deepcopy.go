@@ -266,17 +266,9 @@ func (in *SopsSecretTemplate) DeepCopyInto(out *SopsSecretTemplate) {
 	}
 	if in.BinaryData != nil {
 		in, out := &in.BinaryData, &out.BinaryData
-		*out = make(map[string][]byte, len(*in))
+		*out = make(map[string]string, len(*in))
 		for key, val := range *in {
-			var outVal []byte
-			if val == nil {
-				(*out)[key] = nil
-			} else {
-				in, out := &val, &outVal
-				*out = make([]byte, len(*in))
-				copy(*out, *in)
-			}
-			(*out)[key] = outVal
+			(*out)[key] = val
 		}
 	}
 }
