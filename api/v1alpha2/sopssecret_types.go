@@ -37,7 +37,7 @@ type SopsSecretTemplate struct {
 
 	// BinaryData is base64 data map to use in Kubernetes secret
 	// +optional
-	BinaryData map[string][]byte `json:"binaryData,omitempty"`
+	BinaryData map[string]string `json:"binaryData,omitempty"`
 }
 
 // SopsSecretSpec defines the desired state of SopsSecret

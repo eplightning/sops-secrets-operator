@@ -6,6 +6,7 @@ package controllers
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -266,7 +267,11 @@ func newSecretForCR(
 	// Construct Data for the secret
 	data := make(map[string][]byte)
 	for key, value := range secretTpl.BinaryData {
-		data[key] = value
+		decoded, err := base64.StdEncoding.DecodeString(value)
+		if err != nil {
+			return nil, fmt.Errorf("newSecretForCR(): binaryData[%v] is not a valid base64 string", key)
+		}
+		data[key] = decoded
 	}
 	for key, value := range secretTpl.Data {
 		data[key] = []byte(value)
