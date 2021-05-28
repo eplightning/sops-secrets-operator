@@ -91,7 +91,7 @@ func (auth *VaultAuth) writeToken(secret *api.Secret) error {
 
 func (auth *VaultAuth) StartAutoRenew(ctx context.Context) {
 	for {
-		err := auth.autoRenewal(ctx.Done())
+		err := auth.autoRenewal(ctx)
 
 		// if any error happened, wait for 30s before next attempt
 		if err == nil {
@@ -112,7 +112,7 @@ func (auth *VaultAuth) StartAutoRenew(ctx context.Context) {
 	}
 }
 
-func (auth *VaultAuth) autoRenewal(stopCh <-chan struct{}) error {
+func (auth *VaultAuth) autoRenewal(ctx context.Context) error {
 	initial, err := auth.authenticate()
 	if err != nil {
 		vaultLog.Error(err, "could not authenticate with vault")
@@ -137,7 +137,7 @@ func (auth *VaultAuth) autoRenewal(stopCh <-chan struct{}) error {
 
 	for {
 		select {
-		case <-stopCh:
+		case <-ctx.Done():
 			return nil
 		case err = <-watcher.DoneCh():
 			if err != nil {

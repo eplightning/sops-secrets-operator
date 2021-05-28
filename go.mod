@@ -1,6 +1,6 @@
 module github.com/isindir/sops-secrets-operator
 
-go 1.14
+go 1.16
 
 require (
 	github.com/go-logr/logr v0.3.0

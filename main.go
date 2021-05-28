@@ -40,11 +40,10 @@ func init() {
 
 func main() {
 	var metricsAddr string
-	var probeAddr string
 	var enableLeaderElection bool
+	var probeAddr string
 	var requeueAfter int64
 
-	var devMode bool
 	var vaultAuth string
 	var vaultRole string
 	var vaultServer string
@@ -57,14 +56,19 @@ func main() {
 			"Enabling this will ensure there is only one active controller manager.")
 	flag.Int64Var(&requeueAfter, "requeue-decrypt-after", 5, "Requeue failed reconciliation in minutes (min 1).")
 
-	flag.BoolVar(&devMode, "dev", false, "Enable development mode, makes logs human readable")
 	flag.StringVar(&vaultAuth, "vault-auth", "", "Vault Kubernetes authentication path.")
 	flag.StringVar(&vaultRole, "vault-role", "", "Vault Kubernetes authentication role.")
 	flag.StringVar(&vaultServer, "vault-server", "", "Vault API URL.")
 	flag.StringVar(&vaultTokenPath, "vault-token-path", "/var/run/secrets/kubernetes.io/serviceaccount/token", "Service account token to use for Vault authentication.")
+
+	opts := zap.Options{
+		Development: false,
+	}
+	opts.BindFlags(flag.CommandLine)
+
 	flag.Parse()
 
-	ctrl.SetLogger(zap.New(zap.UseDevMode(devMode)))
+	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
