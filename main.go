@@ -39,38 +39,31 @@ func init() {
 }
 
 func main() {
-	var devMode bool
 	var metricsAddr string
-	var enableLeaderElection bool
 	var probeAddr string
+	var enableLeaderElection bool
 	var requeueAfter int64
 
-	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")
-	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
-	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
+	var devMode bool
 	var vaultAuth string
 	var vaultRole string
 	var vaultServer string
 	var vaultTokenPath string
 
-	flag.BoolVar(&devMode, "dev", false, "Enable development mode, makes logs human readable")
-	flag.StringVar(&metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")
-	flag.BoolVar(&enableLeaderElection, "enable-leader-election", false,
+	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")
+	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
+	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
 	flag.Int64Var(&requeueAfter, "requeue-decrypt-after", 5, "Requeue failed reconciliation in minutes (min 1).")
-	opts := zap.Options{
-		Development: true,
-	}
-	opts.BindFlags(flag.CommandLine)
-	flag.Int64Var(&requeueAfter, "requeue-decrypt-after", 5, "Requeue failed decryption in minutes (min 1).")
+
+	flag.BoolVar(&devMode, "dev", false, "Enable development mode, makes logs human readable")
 	flag.StringVar(&vaultAuth, "vault-auth", "", "Vault Kubernetes authentication path.")
 	flag.StringVar(&vaultRole, "vault-role", "", "Vault Kubernetes authentication role.")
 	flag.StringVar(&vaultServer, "vault-server", "", "Vault API URL.")
 	flag.StringVar(&vaultTokenPath, "vault-token-path", "/var/run/secrets/kubernetes.io/serviceaccount/token", "Service account token to use for Vault authentication.")
 	flag.Parse()
 
-	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 	ctrl.SetLogger(zap.New(zap.UseDevMode(devMode)))
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{

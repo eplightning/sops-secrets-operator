@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"fmt"
 	"github.com/hashicorp/vault/api"
 	"github.com/mitchellh/go-homedir"
@@ -88,21 +89,21 @@ func (auth *VaultAuth) writeToken(secret *api.Secret) error {
 	return nil
 }
 
-func (auth *VaultAuth) StartAutoRenew(stopCh <-chan struct{}) {
+func (auth *VaultAuth) StartAutoRenew(ctx context.Context) {
 	for {
-		err := auth.autoRenewal(stopCh)
+		err := auth.autoRenewal(ctx.Done())
 
 		// if any error happened, wait for 30s before next attempt
 		if err == nil {
 			select {
-			case <-stopCh:
+			case <-ctx.Done():
 				return
 			default:
 				continue
 			}
 		} else {
 			select {
-			case <-stopCh:
+			case <-ctx.Done():
 				return
 			case <-time.After(30 * time.Second):
 				continue
